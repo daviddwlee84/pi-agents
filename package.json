@@ -1,0 +1,23 @@
+{
+  "name": "pi-agents",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Git-managed Pi and Oh My Pi harness combos",
+  "type": "module",
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "bin": {
+    "pia": "bin/pia"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && node scripts/check.ts",
+    "test": "node --test \"test/*.test.ts\"",
+    "test:all": "npm run check && npm test"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.1",
+    "typescript": "7.0.2"
+  }
+}

@@ -35,3 +35,7 @@
 *.local
 .direnv/
 # <<< dev gitignore <<<
+
+# Node development artifacts (the shipped CLI has no runtime dependencies)
+node_modules/
+coverage/

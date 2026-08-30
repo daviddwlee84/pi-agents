@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/daviddwlee84/pi-agents/schema/combo.schema.json",
+  "title": "pia combo metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "description", "maturity", "history"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": 1 },
+    "description": { "type": "string", "pattern": "\\S" },
+    "maturity": {
+      "enum": ["experimental", "learning", "production"]
+    },
+    "launchArgs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "allOf": [
+          { "not": { "const": "--" } },
+          { "not": { "enum": ["-r", "-c"] } },
+          {
+            "not": {
+              "pattern": "^(--profile|--alias|--session-dir|--cwd|--config|--fork|--resume|--session|--continue|--api-key)(=|$)"
+            }
+          }
+        ]
+      },
+      "default": []
+    },
+    "history": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode"],
+          "properties": { "mode": { "const": "isolated" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "group"],
+          "properties": {
+            "mode": { "const": "shared" },
+            "group": {
+              "type": "string",
+              "pattern": "^[a-z0-9](?:[a-z0-9._-]{0,58}[a-z0-9_-])?$"
+            }
+          }
+        }
+      ]
+    },
+    "derivedFrom": {
+      "type": "string",
+      "pattern": "^(pi|omp)/[a-z0-9](?:[a-z0-9._-]{0,58}[a-z0-9_-])?$"
+    },
+    "parentDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  },
+  "allOf": [
+    {
+      "if": { "required": ["derivedFrom"] },
+      "then": { "required": ["parentDigest"] }
+    },
+    {
+      "if": { "required": ["parentDigest"] },
+      "then": { "required": ["derivedFrom"] }
+    }
+  ]
+}

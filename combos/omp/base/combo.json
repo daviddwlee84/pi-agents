@@ -1,0 +1,10 @@
+{
+  "$schema": "../../../schema/combo.schema.json",
+  "schemaVersion": 1,
+  "description": "Neutral Oh My Pi native profile with isolated runtime state.",
+  "maturity": "learning",
+  "launchArgs": [],
+  "history": {
+    "mode": "isolated"
+  }
+}

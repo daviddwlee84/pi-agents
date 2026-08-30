@@ -1,0 +1,3 @@
+# Machine-local SpecStory state only; history and references stay tracked.
+/.project.json
+/statistics.json

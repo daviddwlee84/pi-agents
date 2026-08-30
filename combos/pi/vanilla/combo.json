@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../schema/combo.schema.json",
+  "schemaVersion": 1,
+  "description": "Core-only upstream Pi with project trust, context, and discovered resources disabled.",
+  "maturity": "learning",
+  "launchArgs": [
+    "--no-approve",
+    "--no-extensions",
+    "--no-skills",
+    "--no-prompt-templates",
+    "--no-themes",
+    "--no-context-files"
+  ],
+  "history": {
+    "mode": "isolated"
+  },
+  "derivedFrom": "pi/base",
+  "parentDigest": "sha256:185116c9147882b2b09e776b0834f9efbc7e64e619c1e17b366faabe949f90ec"
+}
