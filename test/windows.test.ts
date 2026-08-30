@@ -96,8 +96,7 @@ test("Windows launchers execute the Node-native TypeScript CLI", { skip: process
   );
   assert.equal(powershellFailure.status, 2, powershellFailure.stderr);
 
-  const command = `""${path.join(repoRoot, "bin", "pia.cmd")}" --version"`;
-  const cmd = spawnSync(process.env.ComSpec || "cmd.exe", ["/d", "/s", "/c", command], {
+  const cmd = spawnSync(process.env.ComSpec || "cmd.exe", ["/d", "/c", "bin\\pia.cmd --version"], {
     cwd: repoRoot,
     encoding: "utf8",
   });
