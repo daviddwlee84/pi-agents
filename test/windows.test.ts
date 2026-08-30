@@ -109,6 +109,26 @@ test("Windows launchers execute the Node-native TypeScript CLI", { skip: process
   assert.equal(cmdFailure.status, 2, cmdFailure.stderr);
 });
 
+test("PowerShell launcher restores the run separator consumed by the call operator", { skip: process.platform !== "win32" }, async (t) => {
+  const fixture = await windowsFixture(t);
+  const launcher = path.join(repoRoot, "bin", "pia.ps1").replaceAll("'", "''");
+  const invocation = spawnSync(
+    "powershell.exe",
+    [
+      "-NoLogo",
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-Command",
+      `& '${launcher}' run pi/base -- --version`,
+    ],
+    { cwd: repoRoot, env: fixture.env, encoding: "utf8" },
+  );
+  assert.equal(invocation.status, 0, invocation.stderr);
+  const capture = JSON.parse(await readFile(fixture.capture, "utf8")) as { argv: string[] };
+  assert.equal(capture.argv.at(-1), "--version");
+});
+
 test("Windows runs npm-style PowerShell harness shims without shell parsing", { skip: process.platform !== "win32" }, async (t) => {
   const fixture = await windowsFixture(t);
   const sentinel = path.join(fixture.root, "injected.txt");
