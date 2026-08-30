@@ -69,6 +69,27 @@ pia run -- --model provider/model
 Selection precedence is an explicit argument, then `PIA_COMBO`, then the value
 saved by `pia use`.
 
+`pia` can generate native completion for every managed shell:
+
+```sh
+pia completion zsh > ~/.zfunc/_pia
+pia completion bash > "${XDG_DATA_HOME:-$HOME/.local/share}/bash-completion/completions/pia"
+```
+
+```powershell
+pia completion powershell | Out-String | Invoke-Expression
+```
+
+Completion discovers combo directories directly, so `pia use <Tab>` reflects
+newly derived or pulled combos without launching another Node process. The
+provided chezmoi integrations generate/cache these scripts automatically.
+
+Human-readable output uses semantic terminal colours when the selected stream
+supports them. `NO_COLOR` and `NODE_DISABLE_COLORS` disable colour;
+`FORCE_COLOR` and non-zero `CLICOLOR_FORCE` can force it through a pipe. JSON,
+completion code, versions, selected combo ids, and artifact paths always stay
+plain for scripts.
+
 The compatibility snapshot for the current implementation is **Pi 0.84.4**
 and **OMP 18.0.11**. Tests cover the wrapper's behavior and pinned session
 fixtures; run `pia doctor` and a smoke launch when using a different upstream

@@ -79,6 +79,27 @@ Node 22.19+ remains required on Windows. Pi's npm package normally exposes
 resolves the PowerShell shim without `shell: true` and launches the native OMP
 executable directly.
 
+## Shell completion
+
+`pia completion zsh`, `pia completion bash`, and
+`pia completion powershell` emit sourceable native completion scripts. The
+generated adapters complete commands and flags, and scan the checkout's local
+`combos/pi` and `combos/omp` directories for combo positions such as
+`pia use <Tab>`. A runtime `PIA_SOURCE_ROOT` override is honoured immediately.
+
+On macOS/Linux, add `pia` to the existing post-apply completion generator so it
+writes `~/.zfunc/_pia` and the bash-completion user file. Resolve the launcher
+from `~/.local/share/pi-agents/bin/pia` explicitly: on a first apply the parent
+shell may not yet have the new PATH. Use the external checkout's Git revision
+as the freshness stamp because `bin/pia` itself may be unchanged while its
+TypeScript or completion assets change.
+
+On Windows, cache `pia completion powershell` through the profile's normal
+generated-init mechanism and use the same checkout revision as an additional
+cache stamp. This avoids paying the Node/TypeScript startup cost on every new
+PowerShell process. The generated completer scans combo manifests directly on
+each Tab press, so combo additions do not require regeneration.
+
 Preview and apply from the dotfiles workflow:
 
 ```sh

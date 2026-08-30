@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
 import { main } from "../src/cli.ts";
+import { ui } from "../src/ui.ts";
 
 main(process.argv.slice(2)).catch((error) => {
   const message = error instanceof Error ? error.message : String(error);
-  process.stderr.write(`pia: ${message}\n`);
+  process.stderr.write(`${ui.danger("pia:", { stream: process.stderr })} ${message}\n`);
   process.exitCode = 2;
 });

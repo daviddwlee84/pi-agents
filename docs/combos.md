@@ -139,3 +139,4 @@ In the table, `<session-selector>` means either `--latest` or
 | `pia fork <from> <to> <session-selector> -- <args>` | Native same-engine session fork |
 | `pia handoff <from> <to> <session-selector> --goal TEXT [--no-run] -- <args>` | Redacted context transfer |
 | `pia doctor [--json]` | Check binaries, versions, source safety, and helpers |
+| `pia completion <zsh\|bash\|powershell>` | Emit native shell completion code |

@@ -9,6 +9,7 @@ import {
   loadCombo,
   renderComboTree,
 } from "./combos.ts";
+import { renderCompletion } from "./completion.ts";
 import { applyCombo, runCombo, runtimeContext, statusCombo } from "./harness.ts";
 import { createHandoff } from "./handoff.ts";
 import { getConfigRoot, getSourceRoot, getStateRoot } from "./paths.ts";
@@ -16,6 +17,7 @@ import { commandExists, commandResult } from "./process.ts";
 import { diffRuntime, diffTrees, scanTree } from "./runtime.ts";
 import { readSelection, resolveSelectedCombo, saveSelection } from "./selection.ts";
 import { assertForkCompatible, listSessions, resolveSession, sessionLeafDir } from "./sessions.ts";
+import { ui, type UiTone } from "./ui.ts";
 
 const HELP = `pia — Git-managed Pi and Oh My Pi harness combos
 
@@ -34,6 +36,7 @@ Usage:
   pia handoff <from> <to> (--session ID|PATH | --latest) --goal TEXT
               [--max-bytes N] [--no-run] -- [target args...]
   pia doctor [--json]
+  pia completion <zsh|bash|powershell>
 
 Selection precedence: explicit combo, PIA_COMBO, then \`pia use\`.
 `;
@@ -48,6 +51,46 @@ interface DoctorCheck {
   ok: boolean;
   detail: string;
   severity: Severity;
+}
+
+const stdoutStyle = { stream: process.stdout } as const;
+const stderrStyle = { stream: process.stderr } as const;
+
+function tone(toneName: UiTone, value: string, stream: NodeJS.WritableStream = process.stdout): string {
+  return ui[toneName](value, { stream });
+}
+
+function maturityTone(maturity: string): UiTone {
+  if (maturity === "production") return "success";
+  if (maturity === "learning") return "warning";
+  return "accent";
+}
+
+function stateTone(state: string): UiTone {
+  if (["ok", "clean", "applied", "unchanged", "reviewed", "added"].includes(state)) return "success";
+  if (["error", "blocked", "refused", "runtime-drift", "conflict", "removed"].includes(state)) return "danger";
+  return "warning";
+}
+
+function actionTone(action: string): UiTone {
+  if (["blocked", "remove", "forget"].includes(action)) return "danger";
+  if (["write", "adopt", "ensure-target", "write-manifest"].includes(action)) return "success";
+  return "warning";
+}
+
+function styleTree(tree: string): string {
+  return tree.split("\n").map((line) => line
+    .replace(/(?:pi|omp)\/[a-z0-9][a-z0-9._-]*/u, (id) => ui.accent(id, stdoutStyle))
+    .replace(/\[(experimental|learning|production)\]/u, (label, maturity: string) =>
+      tone(maturityTone(maturity), label)))
+    .join("\n");
+}
+
+function printHelp(): void {
+  const rendered = HELP
+    .replace(/^pia —/u, `${ui.accent("pia", stdoutStyle)} —`)
+    .replace(/^(Usage:|Selection precedence:)/gmu, (label) => ui.accent(label, stdoutStyle));
+  process.stdout.write(rendered);
 }
 
 function errorMessage(error: unknown): string {
@@ -96,24 +139,27 @@ function printJson(value: unknown): void {
 }
 
 function printStatus(status: RuntimeStatus): void {
-  process.stdout.write(`state: ${status.state}\n`);
-  process.stdout.write(`source: ${status.sourceDir}\n`);
-  process.stdout.write(`runtime: ${status.targetDir}\n`);
+  process.stdout.write(`${ui.muted("state:", stdoutStyle)} ${tone(stateTone(status.state), status.state)}\n`);
+  process.stdout.write(`${ui.muted("source:", stdoutStyle)} ${ui.accent(status.sourceDir, stdoutStyle)}\n`);
+  process.stdout.write(`${ui.muted("runtime:", stdoutStyle)} ${ui.accent(status.targetDir, stdoutStyle)}\n`);
   for (const file of status.files.filter((item) => item.status !== "clean")) {
-    process.stdout.write(`${file.status.padEnd(18)} ${file.path}${file.reason ? ` (${file.reason})` : ""}\n`);
+    const label = tone(stateTone(file.status), file.status.padEnd(18));
+    const reason = file.reason ? ` ${ui.muted(`(${file.reason})`, stdoutStyle)}` : "";
+    process.stdout.write(`${label} ${ui.accent(file.path, stdoutStyle)}${reason}\n`);
   }
 }
 
 function printActions(result: ApplyResult): void {
-  process.stdout.write(`${result.dryRun ? "planned" : result.applied ? "applied" : "unchanged"}: ${result.actions.length} action(s)\n`);
+  const outcome = result.dryRun ? "planned" : result.applied ? "applied" : "unchanged";
+  process.stdout.write(`${tone(stateTone(outcome), outcome)}: ${result.actions.length} action(s)\n`);
   for (const action of result.actions) {
-    const suffix = "path" in action && action.path ? ` ${action.path}` : "";
+    const suffix = "path" in action && action.path ? ` ${ui.accent(action.path, stdoutStyle)}` : "";
     const classification = "classification" in action && action.classification
-      ? ` [${action.classification}]`
+      ? ` ${tone(stateTone(action.classification), `[${action.classification}]`)}`
       : "";
-    process.stdout.write(`${action.action}${suffix}${classification}\n`);
+    process.stdout.write(`${tone(actionTone(action.action), action.action)}${suffix}${classification}\n`);
   }
-  if (!result.ok) process.stdout.write(`refused: ${result.reason}\n`);
+  if (!result.ok) process.stdout.write(`${ui.danger("refused:", stdoutStyle)} ${result.reason}\n`);
 }
 
 async function resolveRequiredSession({
@@ -148,7 +194,10 @@ async function cmdRun(sourceRoot: string, stateRoot: string, args: string[], env
     const parent = await loadCombo(sourceRoot, combo.metadata.derivedFrom);
     const currentParentDigest = await comboDigest(parent);
     if (currentParentDigest !== combo.metadata.parentDigest) {
-      process.stderr.write(`pia: warning: ${combo.id} parent ${parent.id} changed since last review\n`);
+      process.stderr.write(
+        `${ui.warning("pia: warning:", stderrStyle)} ${ui.accent(combo.id, stderrStyle)} parent ` +
+        `${ui.accent(parent.id, stderrStyle)} changed since last review\n`,
+      );
     }
   }
   const result = await runCombo({ combo, stateRoot, env, userArgs: passthrough });
@@ -163,9 +212,14 @@ async function cmdList(sourceRoot: string, args: string[]): Promise<void> {
   if (json) {
     printJson(combos.map((combo) => ({ id: combo.id, ...combo.metadata })));
   } else if (tree) {
-    process.stdout.write(`${renderComboTree(combos)}\n`);
+    process.stdout.write(`${styleTree(renderComboTree(combos))}\n`);
   } else {
-    for (const combo of combos) process.stdout.write(`${combo.id}\t${combo.metadata.maturity}\t${combo.metadata.description}\n`);
+    for (const combo of combos) {
+      process.stdout.write(
+        `${ui.accent(combo.id, stdoutStyle)}\t${tone(maturityTone(combo.metadata.maturity), combo.metadata.maturity)}` +
+        `\t${ui.muted(combo.metadata.description, stdoutStyle)}\n`,
+      );
+    }
   }
 }
 
@@ -183,11 +237,17 @@ async function cmdLineage(sourceRoot: string, args: string[]): Promise<void> {
     });
     return;
   }
-  process.stdout.write(`${info.combo.id}\n`);
+  process.stdout.write(`${ui.accent(info.combo.id, stdoutStyle)}\n`);
   for (const ancestor of info.ancestors) {
-    process.stdout.write(`  <- ${ancestor.id} (${ancestor.reviewed ? "reviewed" : "changed since review"})\n`);
+    const review = ancestor.reviewed ? "reviewed" : "changed since review";
+    process.stdout.write(
+      `${ui.muted("  <-", stdoutStyle)} ${ui.accent(ancestor.id, stdoutStyle)} ` +
+      `${tone(stateTone(review), `(${review})`)}\n`,
+    );
   }
-  for (const child of info.descendants) process.stdout.write(`  -> ${child}\n`);
+  for (const child of info.descendants) {
+    process.stdout.write(`${ui.muted("  ->", stdoutStyle)} ${ui.accent(child, stdoutStyle)}\n`);
+  }
 }
 
 async function cmdStatus(sourceRoot: string, stateRoot: string, args: string[], env: Env): Promise<void> {
@@ -213,9 +273,13 @@ async function cmdDiff(sourceRoot: string, stateRoot: string, args: string[], en
     const result = await diffTrees({ sourceDir: combo.agentDir, parentDir: parent.agentDir });
     if (json) return printJson(result);
     for (const file of result.files.filter((item) => item.status !== "unchanged")) {
-      process.stdout.write(`${file.status.padEnd(9)} ${file.path}\n`);
+      process.stdout.write(
+        `${tone(stateTone(file.status), file.status.padEnd(9))} ${ui.accent(file.path, stdoutStyle)}\n`,
+      );
     }
-    if (result.counts.total === result.counts.unchanged) process.stdout.write("No parent differences.\n");
+    if (result.counts.total === result.counts.unchanged) {
+      process.stdout.write(`${ui.success("No parent differences.", stdoutStyle)}\n`);
+    }
     return;
   }
   const context = await runtimeContext({ combo, stateRoot, env });
@@ -372,7 +436,15 @@ async function cmdDoctor(sourceRoot: string, stateRoot: string, args: string[], 
   add("stateRoot", true, stateRoot);
   add("configRoot", true, getConfigRoot(env));
   if (json) printJson({ checks });
-  else for (const check of checks) process.stdout.write(`${check.ok ? "ok" : check.severity === "warning" ? "warn" : "error"}\t${check.name}\t${check.detail}\n`);
+  else {
+    for (const check of checks) {
+      const label = check.ok ? "ok" : check.severity === "warning" ? "warn" : "error";
+      process.stdout.write(
+        `${tone(stateTone(label), label)}\t${ui.accent(check.name, stdoutStyle)}\t` +
+        `${ui.muted(check.detail, stdoutStyle)}\n`,
+      );
+    }
+  }
   if (checks.some((check) => !check.ok && check.severity === "error")) process.exitCode = 1;
 }
 
@@ -381,7 +453,7 @@ export async function main(argv: string[], env: Env = process.env): Promise<void
   const stateRoot = getStateRoot(env);
   const args = [...argv];
   if (args[0] === "--help" || args[0] === "-h" || args[0] === "help") {
-    process.stdout.write(HELP);
+    printHelp();
     return;
   }
   if (args[0] === "--version" || args[0] === "-V") {
@@ -421,5 +493,10 @@ export async function main(argv: string[], env: Env = process.env): Promise<void
   if (command === "fork") return await cmdFork(sourceRoot, stateRoot, args, env);
   if (command === "handoff") return await cmdHandoff(sourceRoot, stateRoot, args, env);
   if (command === "doctor") return await cmdDoctor(sourceRoot, stateRoot, args, env);
+  if (command === "completion") {
+    if (args.length !== 1) throw new Error("Usage: pia completion <zsh|bash|powershell>");
+    process.stdout.write(await renderCompletion(args[0]));
+    return;
+  }
   throw new Error(`Unknown command ${command}; run pia --help`);
 }
