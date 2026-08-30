@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "agent-history-hygiene": {
+      "source": "daviddwlee84/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/local/agent-history-hygiene/SKILL.md",
+      "computedHash": "c0a12a78f154322edf7254ed10881760fdc5e625abd1c828c0596c2cfb550069"
+    },
+    "project-knowledge-harness": {
+      "source": "daviddwlee84/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/local/project-knowledge-harness/SKILL.md",
+      "computedHash": "0a8d0b4888de715160f947499408251de0530ccb5f7e8bb65c9c994b685e5d5a"
+    }
+  }
+}
