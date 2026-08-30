@@ -70,8 +70,8 @@ The extractor:
 4. Caps the document at 128 KiB and reports omitted or truncated blocks.
 5. Runs the agent-history-hygiene redactor, then validates with `gitleaks`.
    Any redaction or validation failure aborts the handoff.
-6. Writes the artifact with mode `0600` and starts a fresh target session with
-   it as the first attachment.
+6. Writes the artifact with mode `0600` on POSIX (or the containing user ACL on
+   Windows) and starts a fresh target session with it as the first attachment.
 
 Use `--session <id-or-absolute-path>` instead of `--latest` to select
 explicitly. `--max-bytes N` can lower or raise the 128 KiB default (minimum

@@ -14,6 +14,7 @@
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && node scripts/check.ts",
     "test": "node --test \"test/*.test.ts\"",
+    "test:windows": "node --test test/process.test.ts test/windows.test.ts",
     "test:all": "npm run check && npm test"
   },
   "devDependencies": {

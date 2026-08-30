@@ -58,6 +58,16 @@ test("derive records lineage and parent digest without runtime inheritance", asy
   }
 });
 
+test("lineage digests ignore non-portable executable bits", async (t) => {
+  if (process.platform === "win32") t.skip("Windows does not expose Git executable bits");
+  const root = await mkdtemp(path.join(os.tmpdir(), "pia-combo-mode-"));
+  await writeCombo(root, "pi/base");
+  const combo = await loadCombo(root, "pi/base");
+  const before = await comboDigest(combo);
+  await chmod(path.join(combo.agentDir, "settings.json"), 0o755);
+  assert.equal(await comboDigest(combo), before);
+});
+
 test("derive refuses any pre-existing target directory", async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), "pia-derive-existing-"));
   await writeCombo(root, "pi/base");

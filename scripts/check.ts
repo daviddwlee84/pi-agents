@@ -24,8 +24,10 @@ for (const combo of combos) {
 
 JSON.parse(await readFile(path.join(sourceRoot, "schema", "combo.schema.json"), "utf8"));
 await access(path.join(sourceRoot, "bin", "pia"));
+await access(path.join(sourceRoot, "bin", "pia.ps1"));
+await access(path.join(sourceRoot, "bin", "pia.cmd"));
 const binMode = (await stat(path.join(sourceRoot, "bin", "pia"))).mode & 0o111;
-if (binMode === 0) throw new Error("bin/pia must be executable");
+if (process.platform !== "win32" && binMode === 0) throw new Error("bin/pia must be executable");
 
 const gitleaks = spawnSync(
   "gitleaks",

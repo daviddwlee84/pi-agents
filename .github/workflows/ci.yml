@@ -31,3 +31,62 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm run test:all
+
+  windows-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run check
+      - run: npm run test:windows
+      - name: Smoke compatible Pi and OMP through both Windows launchers
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          npm install --global --ignore-scripts --no-audit --no-fund '@earendil-works/pi-coding-agent@0.84.4'
+          if ($LASTEXITCODE -ne 0) { throw "Pi installation failed with exit code $LASTEXITCODE" }
+
+          $isolatedHome = Join-Path $env:RUNNER_TEMP "pia-home"
+          New-Item -ItemType Directory -Force $isolatedHome | Out-Null
+          $env:HOME = $isolatedHome
+          $env:USERPROFILE = $isolatedHome
+
+          $ompBin = Join-Path $env:RUNNER_TEMP "omp-bin"
+          New-Item -ItemType Directory -Force $ompBin | Out-Null
+          $ompExe = Join-Path $ompBin "omp.exe"
+          Invoke-WebRequest `
+            -Uri 'https://github.com/can1357/oh-my-pi/releases/download/v18.0.11/omp-windows-x64.exe' `
+            -OutFile $ompExe
+          $ompSha256 = (Get-FileHash -Algorithm SHA256 $ompExe).Hash.ToLowerInvariant()
+          if ($ompSha256 -ne '3402325fff22ab8972d890af28ca4ea6670bfc43aa5a9042b9b02b7ab93e6f6a') {
+            throw "OMP binary digest mismatch: $ompSha256"
+          }
+
+          $env:XDG_CONFIG_HOME = Join-Path $env:RUNNER_TEMP "pia-config"
+          $env:PIA_STATE_HOME = Join-Path $env:RUNNER_TEMP "pia-state"
+          $env:PIA_OMP_BIN = $ompExe
+          $env:Path = "$ompBin;$env:Path"
+
+          $piDirect = (& pi --version | Out-String).Trim()
+          if ($LASTEXITCODE -ne 0) { throw "pi --version failed with exit code $LASTEXITCODE" }
+          $piViaPia = (& .\bin\pia.ps1 run pi/base -- --version | Out-String).Trim()
+          if ($LASTEXITCODE -ne 0) { throw "pia.ps1 Pi smoke failed with exit code $LASTEXITCODE" }
+          if ($piViaPia -ne $piDirect) { throw "Pi version mismatch: direct=$piDirect pia=$piViaPia" }
+
+          $ompDirect = (& $env:PIA_OMP_BIN --version | Out-String).Trim() -replace '^omp/', ''
+          if ($LASTEXITCODE -ne 0) { throw "omp --version failed with exit code $LASTEXITCODE" }
+          $ompViaPia = (& cmd.exe /d /c bin\pia.cmd run omp/base -- --version | Out-String).Trim() -replace '^omp/', ''
+          if ($LASTEXITCODE -ne 0) { throw "pia.cmd OMP smoke failed with exit code $LASTEXITCODE" }
+          if ($ompViaPia -ne $ompDirect) { throw "OMP version mismatch: direct=$ompDirect pia=$ompViaPia" }
+
+          Write-Host "Pi $piViaPia and OMP $ompViaPia passed through pia on Node ${{ matrix.node }}."

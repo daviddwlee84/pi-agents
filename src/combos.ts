@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { cp, lstat, mkdir, readFile, readdir, realpath } from "node:fs/promises";
 import type { Dirent } from "node:fs";
 import path from "node:path";
-import { scanTree, treeDigest } from "./runtime.ts";
+import { scanTree, treeContentDigest } from "./runtime.ts";
 import { writeSourceJsonAtomic } from "./paths.ts";
 
 export const ENGINES = ["pi", "omp"] as const;
@@ -299,7 +299,7 @@ export async function comboDigest(combo: Combo): Promise<string> {
   delete metadata.$schema;
   delete metadata.derivedFrom;
   delete metadata.parentDigest;
-  const agentDigest = await treeDigest(combo.agentDir);
+  const agentDigest = await treeContentDigest(combo.agentDir);
   const hash = createHash("sha256");
   hash.update(JSON.stringify(stable(metadata)));
   hash.update("\0");

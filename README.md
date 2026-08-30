@@ -24,6 +24,8 @@ want to run.
 ```sh
 git clone https://github.com/daviddwlee84/pi-agents.git
 cd pi-agents
+
+# Optional for a development checkout; chezmoi deployments put bin/ on PATH.
 npm link
 
 pia doctor
@@ -31,6 +33,28 @@ pia list --tree
 pia apply pi/base --dry-run
 pia run pi/base --
 ```
+
+No link is required to run directly from a checkout:
+
+```sh
+./bin/pia --version              # macOS/Linux
+```
+
+```powershell
+.\bin\pia.ps1 --version         # Windows PowerShell
+```
+
+```bat
+bin\pia.cmd --version           # Windows cmd.exe
+```
+
+When `bin/` is on `PATH`, all three environments use the command name `pia`.
+The PowerShell launcher preserves literal argument boundaries and the child
+exit code. The cmd launcher follows cmd.exe's normal quoting rules and is for
+trusted interactive commands; programmatic callers with arbitrary input should
+invoke `pia.ps1` through PowerShell. If an npm-installed harness is exposed as
+a shim such as `pi.ps1`, `pia` invokes it through a fixed `PowerShell -File`
+command and never enables child-process shell parsing.
 
 `pia run` safely applies the selected source before launch and stops on runtime
 drift or an unowned collision. You can also save a default instead of naming
@@ -43,8 +67,7 @@ pia run -- --model provider/model
 ```
 
 Selection precedence is an explicit argument, then `PIA_COMBO`, then the value
-saved by `pia use`. Run `./bin/pia` directly if you do not want a global npm
-link.
+saved by `pia use`.
 
 The compatibility snapshot for the current implementation is **Pi 0.84.4**
 and **OMP 18.0.11**. Tests cover the wrapper's behavior and pinned session

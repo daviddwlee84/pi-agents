@@ -42,9 +42,12 @@ credentials, sessions, caches, blobs, databases, and any other runtime-created
 files stay outside Git or remain unowned in the runtime tree.
 
 The source tree must not contain credentials, `.env` files, session/package/
-cache stores, or symlinks. Runtime directories are
-created with mode `0700`; managed files use `0600` or `0700` according to their
-executable bit. Writes and manifest replacement are atomic.
+cache stores, or symlinks. On POSIX systems runtime directories are created
+with mode `0700`; managed files use `0600` or `0700` according to their
+executable bit. Windows does not expose equivalent POSIX mode enforcement
+through Node, so runtime files inherit the user's profile ACL and drift checks
+compare content rather than synthetic mode bits there. Writes and manifest
+replacement are atomic.
 
 The source uses only TypeScript syntax that Node can erase without code
 generation. Runtime execution therefore stays build-free; `tsconfig.json` and

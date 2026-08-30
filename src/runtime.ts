@@ -273,6 +273,10 @@ function desiredMode(executable: boolean): number {
   return executable ? EXECUTABLE_MODE : FILE_MODE;
 }
 
+function observedModeMatches(actual: number, expected: number): boolean {
+  return process.platform === 'win32' || actual === expected;
+}
+
 function sortStrings(left: string, right: string): number {
   return left < right ? -1 : left > right ? 1 : 0;
 }
@@ -440,7 +444,7 @@ function targetMatchesManifest(
     target !== null &&
     manifest !== null &&
     target.sha256 === manifest.sha256 &&
-    target.actualMode === manifest.mode
+    observedModeMatches(target.actualMode, manifest.mode)
   );
 }
 
@@ -449,7 +453,7 @@ function targetMatchesSource(target: InternalFileMetadata | null, source: Runtim
     target !== null &&
     source !== null &&
     target.sha256 === source.sha256 &&
-    target.actualMode === source.mode
+    observedModeMatches(target.actualMode, source.mode)
   );
 }
 
@@ -471,6 +475,16 @@ function digestFileEntries(files: Readonly<Record<string, RuntimeSourceFile>>): 
     digest.update('\0');
   }
   return digest.digest('hex');
+}
+
+function digestFileContents(files: Readonly<Record<string, RuntimeSourceFile>>): string {
+  const normalized = Object.fromEntries(
+    Object.entries(files).map(([relativePath, metadata]) => [
+      relativePath,
+      { ...metadata, executable: false },
+    ]),
+  );
+  return digestFileEntries(normalized);
 }
 
 /**
@@ -526,6 +540,11 @@ export async function scanTree(root: string): Promise<ScannedRuntimeTree> {
 
 export async function treeDigest(root: string): Promise<string> {
   return (await scanTree(root)).digest;
+}
+
+/** Portable lineage digest: Git executable bits are not observable on Windows. */
+export async function treeContentDigest(root: string): Promise<string> {
+  return digestFileContents((await scanTree(root)).files);
 }
 
 function validateManifest(
@@ -784,7 +803,9 @@ export async function getRuntimeStatus({
   const hasRuntimeDrift = counts['runtime-drift'] > 0;
   const hasConflicts = counts.conflict > 0;
   const hasBlockingConflict = files.some((file) => file.blocking);
-  const targetNeedsInitialization = !targetRoot.exists || targetRoot.mode !== DIRECTORY_MODE;
+  const targetNeedsInitialization =
+    !targetRoot.exists ||
+    (targetRoot.mode !== null && !observedModeMatches(targetRoot.mode, DIRECTORY_MODE));
   const hasChanges =
     targetNeedsInitialization || !loadedManifest.exists || files.some((file) => file.status !== 'clean');
 
@@ -843,6 +864,7 @@ async function ensureTargetParent(targetDir: string, relativePath: string): Prom
 }
 
 async function fsyncDirectory(directory: string): Promise<void> {
+  if (process.platform === 'win32') return;
   let handle: FileHandle | undefined;
   try {
     handle = await fs.open(directory, fsConstants.O_RDONLY);
@@ -895,7 +917,7 @@ function sameTargetSnapshot(currentInspection: TargetInspection, priorFile: Runt
   if (currentInspection.metadata === null || priorFile.target === null) return false;
   return (
     currentInspection.metadata.sha256 === priorFile.target.sha256 &&
-    currentInspection.metadata.actualMode === priorFile.target.mode
+    observedModeMatches(currentInspection.metadata.actualMode, priorFile.target.mode)
   );
 }
 
@@ -939,7 +961,7 @@ function buildActions(
       if (
         file.target !== null &&
         file.target.sha256 === file.source.sha256 &&
-        file.target.mode === file.source.mode
+        observedModeMatches(file.target.mode, file.source.mode)
       ) {
         actions.push({ path: file.path, action: 'adopt', classification: file.status });
       } else {
