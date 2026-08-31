@@ -6,6 +6,7 @@ last_verified: 2026-08-31
 upstreams:
   - https://pi.dev/
   - https://github.com/earendil-works/pi
+  - https://github.com/earendil-works/pi-chat
   - https://github.com/can1357/oh-my-pi
   - https://github.com/nicobailon/pi-mcp-adapter
   - https://www.deepseek.com/harness/en/
@@ -68,6 +69,23 @@ Pi 明確未將 MCP、子代理 (subagent)、權限對話框 (permission dialogs
 不得將該轉接器所描述的 `pi.mcp` 資訊清單欄位 (manifest field)，說成 Pi package
 資訊清單的功能。依賴轉接器的 combo 應明確鎖定版本、審查並測試該轉接器。
 
+## 遠端訊息是外部整合
+
+Pi package 與 Extension 可以把工作階段連接到 Discord、Telegram 或其他訊息系統，
+未來的 Pi-only combo 也可能鎖定其中一種整合。這並不會讓遠端訊息成為 `pia` 核心
+能力。`pia` 不提供訊息傳輸、認證或准入、即時工作階段協調、沙箱、耐久投遞或服務
+監督。
+
+應套用與 MCP 相同的規則：明確指出具體整合、鎖定版本，並針對選定的 Pi 版本測試
+其行為，而不是把第三方行為歸於 Pi 本身。Pi README 將獨立的
+[`earendil-works/pi-chat`](https://github.com/earendil-works/pi-chat) 專案列為聊天自動化
+選項；共用組織與上游連結本身並不能建立支援合約，也不能證明它與本儲存庫的 Pi
+快照相容。
+
+請參閱註明日期的 [IM gateway 研究](https://github.com/daviddwlee84/pi-agents/blob/main/backlog/pi-im-gateway.md)，
+了解所選的工作階段路由器脈絡合約、候選方案證據，以及從外部實驗升級為實驗性 combo
+或維護服務所需的關卡。
+
 ## 其他代理框架：比較相同層級
 
 [DeepSeek Harness](deepseek-harness.md) 是獨立、以 Cordis 為基礎的執行環境，提供 Web、
@@ -97,6 +115,7 @@ OMP 原生的使用者狀態，但不會隔離每一個專案或外部工具的�
 
 - [Pi coding-agent README，`v0.84.4`](https://github.com/earendil-works/pi/blob/v0.84.4/packages/coding-agent/README.md)
 - [Pi Extension 範例，`v0.84.4`](https://github.com/earendil-works/pi/blob/v0.84.4/packages/coding-agent/examples/extensions/subagent/README.md)
+- [`pi-chat`，commit `9adbd29`](https://github.com/earendil-works/pi-chat/tree/9adbd29b40ee27ff1decf0fc87cbe180b40924f5)
 - [Oh My Pi README，`v18.0.11`](https://github.com/can1357/oh-my-pi/blob/v18.0.11/README.md)
 - [`pi-mcp-adapter` README，commit `ff234b8`](https://github.com/nicobailon/pi-mcp-adapter/blob/ff234b862359e722bf4dc1c99cde62278d4b8eb3/README.md)
 - [DeepSeek Harness 架構，`dsh-v0.1.2-alpha.2`](https://github.com/deepseek-ai/deepseek-harness/blob/dsh-v0.1.2-alpha.2/docs/architecture.md)

@@ -6,6 +6,7 @@ last_verified: 2026-08-31
 upstreams:
   - https://pi.dev/
   - https://github.com/earendil-works/pi
+  - https://github.com/earendil-works/pi-chat
   - https://github.com/can1357/oh-my-pi
   - https://github.com/nicobailon/pi-mcp-adapter
   - https://www.deepseek.com/harness/en/
@@ -75,6 +76,27 @@ A `pi.mcp` manifest field described by that adapter must not be presented as a
 Pi package-manifest feature. Combos that depend on an adapter should pin, review,
 and test it explicitly.
 
+## Remote messaging is an external integration
+
+Pi packages and extensions can connect a session to Discord, Telegram, or other
+messaging systems, and a future Pi-only combo may pin one of those integrations.
+That does not make remote messaging a `pia` core capability. `pia` does not
+provide a messaging transport, authentication or admission, live session
+orchestration, sandboxing, durable delivery, or service supervision.
+
+Apply the same rule as for MCP: name the specific integration, pin it, and test
+its behavior against the selected Pi version instead of attributing third-party
+behavior to Pi itself. The Pi README links to the separate
+[`earendil-works/pi-chat`](https://github.com/earendil-works/pi-chat) project as
+a chat-automation option; its shared organization and upstream link do not by
+themselves establish a support contract or compatibility with this repository's
+Pi snapshot.
+
+See the dated [IM gateway research](https://github.com/daviddwlee84/pi-agents/blob/main/backlog/pi-im-gateway.md)
+for the selected session-router context contract, candidate evidence, and the
+gates for moving from an external spike to an experimental combo or maintained
+service.
+
 ## Other harnesses: compare the same layer
 
 [DeepSeek Harness](deepseek-harness.md) is a separate Cordis-based runtime with
@@ -107,6 +129,7 @@ combo dependencies rather than abstractions copied into `pia`.
 
 - [Pi coding-agent README, `v0.84.4`](https://github.com/earendil-works/pi/blob/v0.84.4/packages/coding-agent/README.md)
 - [Pi Extension examples, `v0.84.4`](https://github.com/earendil-works/pi/blob/v0.84.4/packages/coding-agent/examples/extensions/subagent/README.md)
+- [`pi-chat`, commit `9adbd29`](https://github.com/earendil-works/pi-chat/tree/9adbd29b40ee27ff1decf0fc87cbe180b40924f5)
 - [Oh My Pi README, `v18.0.11`](https://github.com/can1357/oh-my-pi/blob/v18.0.11/README.md)
 - [`pi-mcp-adapter` README, commit `ff234b8`](https://github.com/nicobailon/pi-mcp-adapter/blob/ff234b862359e722bf4dc1c99cde62278d4b8eb3/README.md)
 - [DeepSeek Harness architecture, `dsh-v0.1.2-alpha.2`](https://github.com/deepseek-ai/deepseek-harness/blob/dsh-v0.1.2-alpha.2/docs/architecture.md)
