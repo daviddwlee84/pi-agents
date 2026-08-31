@@ -44,7 +44,7 @@ repos:
         args: ['--maxkb=2048']
       - id: check-merge-conflict
       - id: end-of-file-fixer
-        exclude: ^\.specstory/
+        exclude: ^(\.agents|\.claude|\.specstory)/
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
-        exclude: ^\.specstory/
+        exclude: ^(\.agents|\.claude|\.specstory)/
