@@ -1,0 +1,22 @@
+[project]
+name = "pi-agents-docs"
+version = "0.0.0"
+description = "Documentation build environment for pi-agents"
+requires-python = ">=3.11"
+
+[project.optional-dependencies]
+docs = [
+    # MkDocs 2 removes the plugin system used by static-i18n.
+    "mkdocs>=1.6,<2",
+    "mkdocs-material>=9.5,<10",
+    "mkdocs-static-i18n>=1.2,<2",
+    "Markdown>=3.10,<4",
+    "PyYAML>=6,<7",
+    "html5lib>=1.1,<2",
+    "pymdown-extensions>=11,<12",
+]
+
+[dependency-groups]
+docs-test = [
+    "pytest>=8.4,<9",
+]

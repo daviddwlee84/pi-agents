@@ -2,7 +2,7 @@
 
 **Status**: P?
 **Effort**: L
-**Related**: `TODO.md` · `docs/combos.md` · `docs/sessions-and-handoff.md`
+**Related**: `TODO.md` · `docs/guides/combos.md` · `docs/guides/sessions-and-handoff.md` · `docs/notes/coding-agents/claude-code.md`
 
 ## Context
 
