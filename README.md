@@ -1,5 +1,7 @@
 # pi-agents
 
+**Documentation:** [Read the live pi-agents documentation](https://daviddwlee84.github.io/pi-agents/) (English / 繁體中文)
+
 `pi-agents` keeps multiple [Pi](https://github.com/earendil-works/pi) and
 [Oh My Pi](https://omp.sh/) harness combinations in one Git repository. Its
 `pia` CLI selects a combo, safely materialises its configuration into private

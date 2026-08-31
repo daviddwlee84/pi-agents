@@ -38,8 +38,8 @@ cd /path/to/your-project
 ```
 
 最後一個 `cd` 很重要：目前目錄會決定代理工具的工作範圍 (working scope) 與專案範圍歷程
-(project-scoped history)。目前此儲存庫是私有的，因此複製儲存庫需要具備存取權的帳號。
-`pia` 的核心命令需要 Node.js 22.19 或更新版本；`run` 還需要已選取的上游代理工具框架，而
+(project-scoped history)。目前此儲存庫是公開的，因此複製儲存庫不需要 GitHub 身分驗證或
+儲存庫授權。`pia` 的核心命令需要 Node.js 22.19 或更新版本；`run` 還需要已選取的上游代理工具框架，而
 handoff 另外需要 Git、來源工作階段所在的可讀取且非裸 (non-bare) Git 工作樹
 (working tree)（其中至少有一筆 commit 且 `HEAD` 可解析）、`PATH` 上字面名稱為
 `python3` 的 3.9 或更新版本執行檔、納入版本控制的遮罩器 (redactor)，以及 `PATH` 上

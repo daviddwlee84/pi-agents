@@ -50,14 +50,17 @@ interactive input. npm PowerShell shims are launched through a fixed
 
 At this snapshot:
 
-- the GitHub repository is private;
-- `package.json` has `"private": true`;
+- the GitHub repository is public, and cloning it requires no GitHub authentication
+  or repository authorization;
+- `package.json` has `"private": true`, and no npm package is published;
 - there are no published repository release tags;
 - no license file is present.
 
-The documentation therefore describes operation for authorized repository
-users. It does not grant public redistribution rights or promise a versioned
-support lifecycle.
+The documentation therefore describes operation from a public source checkout.
+Public repository visibility permits unauthenticated cloning, but
+`"private": true` still prevents npm publication, and the absence of a license
+does not supply public redistribution rights or promise a versioned support
+lifecycle.
 
 ## Updating this page
 

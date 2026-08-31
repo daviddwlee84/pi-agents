@@ -13,7 +13,7 @@
 此儲存庫 (repository) 不會編輯 dotfiles 儲存庫。請在你自己的 chezmoi 來源目錄中
 套用以下做法。
 
-## 私有 `external` 簽出目錄
+## 公開 `external` 簽出目錄
 
 在 `.chezmoiexternal.toml.tmpl` 中加入類似以下的項目：
 
@@ -28,9 +28,8 @@
         args = ["--ff-only"]
 ```
 
-此儲存庫為私有。請在 chezmoi 套用 `external` 前，使用你慣用的 Git 憑證或 SSH
-設定完成 GitHub 身分驗證 (authentication)；請勿將權杖 (token) 放入此檔案或
-任何 combo。
+此儲存庫為公開。chezmoi 複製此 `external` 時，不需要 GitHub 身分驗證
+(authentication) 或儲存庫授權；請勿將權杖 (token) 放入此檔案或任何 combo。
 
 ## 在 macOS 與 Linux 上依檔案是否存在設定 PATH
 
