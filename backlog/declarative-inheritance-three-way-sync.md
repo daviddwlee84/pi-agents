@@ -2,7 +2,7 @@
 
 **Status**: P?
 **Effort**: M
-**Related**: `TODO.md` · `docs/architecture.md` · `docs/combos.md`
+**Related**: `TODO.md` · `docs/concepts/architecture.md` · `docs/guides/combos.md`
 
 ## Context
 

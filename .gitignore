@@ -39,3 +39,12 @@
 # Node development artifacts (the shipped CLI has no runtime dependencies)
 node_modules/
 coverage/
+
+# MkDocs development and build artifacts
+/.venv/
+/site/
+
+# Python test and bytecode caches
+__pycache__/
+*.py[cod]
+.pytest_cache/

@@ -1,0 +1,163 @@
+site_name: pi-agents
+site_description: Git-managed Pi and Oh My Pi harness combinations, plus practical agent-harness research
+site_url: https://daviddwlee84.github.io/pi-agents/
+repo_url: https://github.com/daviddwlee84/pi-agents
+repo_name: daviddwlee84/pi-agents
+edit_uri: edit/main/docs/
+strict: true
+
+copyright: Maintained as project documentation and dated research notes.
+
+theme:
+  name: material
+  language: en
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - toc.follow
+
+plugins:
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: false
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: en
+          name: English
+          default: true
+        - locale: zh-TW
+          name: 繁體中文
+          nav_translations:
+            Home: 首頁
+            Getting started: 快速開始
+            Project: 專案
+            Architecture: 架構
+            Security and data boundaries: 安全與資料邊界
+            Guides: 指南
+            Combos: Combos
+            Sessions and handoff: 工作階段與交接
+            Chezmoi integration: Chezmoi 整合
+            Troubleshooting: 疑難排解
+            Reference: 參考資料
+            CLI reference: CLI 參考
+            Combo schema: Combo 結構
+            Paths and environment: 路徑與環境變數
+            Compatibility: 相容性
+            Notes: 研究筆記
+            Notes home: 筆記首頁
+            Pi: Pi
+            Pi overview: Pi 概觀
+            Harness engineering: Harness 工程
+            Ecosystem: 生態系
+            Ecosystem overview: 生態系概觀
+            Oh My Pi: Oh My Pi
+            DeepSeek Harness: DeepSeek Harness
+            Paradigms: 典範演進
+            Model, harness, and agent: 模型、Harness 與 Agent
+            Engineering evolution: 工程概念演進
+            Coding agents: 程式開發 Agent
+            Agent landscape: Agent 版圖
+            Claude Code: Claude Code
+            Codex: Codex
+            Cursor: Cursor
+            OpenCode: OpenCode
+            Gemini CLI: Gemini CLI
+            Antigravity: Antigravity
+            Best practices: 最佳實務
+  - search:
+      lang:
+        - en
+        - zh
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+    absolute_links: warn
+  links:
+    not_found: warn
+    anchors: warn
+    absolute_links: warn
+    unrecognized_links: warn
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Project:
+      - Architecture: concepts/architecture.md
+      - Security and data boundaries: concepts/security-and-data-boundaries.md
+  - Guides:
+      - Combos: guides/combos.md
+      - Sessions and handoff: guides/sessions-and-handoff.md
+      - Chezmoi integration: guides/chezmoi.md
+      - Troubleshooting: guides/troubleshooting.md
+  - Reference:
+      - CLI reference: reference/cli.md
+      - Combo schema: reference/combo-schema.md
+      - Paths and environment: reference/paths-and-environment.md
+      - Compatibility: reference/compatibility.md
+  - Notes:
+      - Notes home: notes/index.md
+      - Pi:
+          - Pi overview: notes/pi/overview.md
+          - Harness engineering: notes/pi/harness-engineering.md
+      - Ecosystem:
+          - Ecosystem overview: notes/ecosystem/index.md
+          - Oh My Pi: notes/ecosystem/oh-my-pi.md
+          - DeepSeek Harness: notes/ecosystem/deepseek-harness.md
+      - Paradigms:
+          - Model, harness, and agent: notes/paradigms/model-harness-agent.md
+          - Engineering evolution: notes/paradigms/engineering-evolution.md
+      - Coding agents:
+          - Agent landscape: notes/coding-agents/index.md
+          - Claude Code: notes/coding-agents/claude-code.md
+          - Codex: notes/coding-agents/codex.md
+          - Cursor: notes/coding-agents/cursor.md
+          - OpenCode: notes/coding-agents/opencode.md
+          - Gemini CLI: notes/coding-agents/gemini-cli.md
+          - Antigravity: notes/coding-agents/antigravity.md
+      - Best practices: notes/best-practices.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/daviddwlee84/pi-agents

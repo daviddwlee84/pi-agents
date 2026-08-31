@@ -2,7 +2,7 @@
 
 **Status**: P?
 **Effort**: L
-**Related**: `TODO.md` · `docs/combos.md` · `docs/ecosystem.md`
+**Related**: `TODO.md` · `docs/guides/combos.md` · `docs/notes/coding-agents/opencode.md`
 
 ## Context
 
