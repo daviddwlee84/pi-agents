@@ -26,14 +26,14 @@ OMP，因此未套用 profile 的原生代理工具框架 (harness) 中已儲存
     必要版本；請另行驗證最低版本。任一輔助工具無法使用時，handoff 仍會採取失敗時
     預設拒絕 (fail closed) 策略。
 
-## 取得私有簽出內容
+## 取得公開簽出內容
 
 ```sh
 git clone https://github.com/daviddwlee84/pi-agents.git
 cd pi-agents
 ```
 
-此版本發佈時儲存庫仍為私有，因此需要 GitHub 驗證與儲存庫存取權。請直接執行對應平台
+此儲存庫是公開的，因此複製儲存庫不需要 GitHub 身分驗證或儲存庫授權。請直接執行對應平台
 的啟動器 (platform launcher)：
 
 === "macOS / Linux"

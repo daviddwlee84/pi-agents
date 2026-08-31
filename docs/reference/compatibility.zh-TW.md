@@ -46,12 +46,13 @@ cmd.exe 引號規則，且預期用於受信任的互動式輸入。npm PowerShe
 
 在此快照時間點：
 
-- GitHub 儲存庫是私有的；
-- `package.json` 設有 `"private": true`；
+- GitHub 儲存庫是公開的，複製時不需要 GitHub 身分驗證或儲存庫授權；
+- `package.json` 設有 `"private": true`，且沒有發佈 npm 套件；
 - 沒有已發布的儲存庫發行標籤 (release tags)；
 - 不存在授權條款檔案。
 
-因此，本文件描述的是獲授權之儲存庫使用者的操作方式。它不授予公開再散布權
+因此，本文件描述的是公開原始碼簽出內容的操作方式。公開儲存庫可見性允許免驗證複製，
+但 `"private": true` 仍會阻止 npm 發佈，而缺少授權條款不會提供公開再散布權
 (public redistribution rights)，也不承諾版本化的支援生命週期
 (versioned support lifecycle)。
 

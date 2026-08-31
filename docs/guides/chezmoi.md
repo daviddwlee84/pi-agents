@@ -12,7 +12,7 @@ checkout, review/commit them, then refresh the external.
 This repository does not edit a dotfiles repository. Apply the following recipes
 in your own chezmoi source.
 
-## Private external checkout
+## Public external checkout
 
 Add an entry like this to `.chezmoiexternal.toml.tmpl`:
 
@@ -27,9 +27,9 @@ Add an entry like this to `.chezmoiexternal.toml.tmpl`:
         args = ["--ff-only"]
 ```
 
-The repository is private. Configure GitHub authentication using your normal
-Git credential or SSH setup before chezmoi applies the external; do not put a
-token in this file or a combo.
+The repository is public, so chezmoi can clone the external without GitHub
+authentication or repository authorization. Do not put a token in this file or
+a combo.
 
 ## Presence-gated PATH on macOS and Linux
 

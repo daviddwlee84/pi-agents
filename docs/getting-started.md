@@ -28,15 +28,15 @@ source.
     checks command presence, not the required versions; verify those minimums
     separately. A handoff still fails closed when either helper is unavailable.
 
-## Get the private checkout
+## Get the public checkout
 
 ```sh
 git clone https://github.com/daviddwlee84/pi-agents.git
 cd pi-agents
 ```
 
-The repository is private at this release, so GitHub authentication and
-repository access are required. Run the platform launcher directly:
+The repository is public, so cloning does not require GitHub authentication or
+repository authorization. Run the platform launcher directly:
 
 === "macOS / Linux"
 

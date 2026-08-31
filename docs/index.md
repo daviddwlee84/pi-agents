@@ -38,8 +38,8 @@ cd /path/to/your-project
 ```
 
 The final `cd` matters: the current directory controls the agent's working scope
-and project-scoped history. The repository is currently private, so cloning
-requires an account with access. Core `pia` commands require Node.js 22.19 or
+and project-scoped history. The repository is public, so cloning does not require
+GitHub authentication or repository authorization. Core `pia` commands require Node.js 22.19 or
 newer; `run` also needs the selected upstream harness, while handoff additionally
 needs Git; a readable, non-bare Git working tree for the source session, with at
 least one commit and a resolvable `HEAD`; the literal `python3` executable version
