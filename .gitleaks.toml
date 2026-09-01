@@ -40,6 +40,19 @@ useDefault = true
     '''\[REDACTED:[A-Za-z0-9._-]+\]''',
   ]
 
+# These two already-published commits added generated SpecStory transcripts
+# that quote Git SHAs, gitleaks rules, and the agent-history-hygiene test
+# corpus. GitHub Actions reviewed 2,851 findings from them: the matches are
+# transcript evidence and synthetic scanner fixtures, not live credentials.
+# Scope the exception to the immutable commits instead of excluding transcript
+# paths, so every future artifact and commit remains fully scanned.
+[[allowlists]]
+  description = "Reviewed transcript-only false positives from the MkDocs and IM gateway sessions"
+  commits = [
+    "7c6f5ceb68b27f87393b1cd23a95c4490a28d16b",
+    "b137ee043e8d9edf25b6d1b8311f352cce721916",
+  ]
+
 # Path-scoped allowlist: inside agent artifact dirs, tolerate explicit
 # example/demo markers without unlocking real leaks. Both the path AND a
 # regex must match, so a real `sk-ant-api03-<95 chars>AA` still fires.
